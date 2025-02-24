@@ -1,9 +1,10 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 import ttkbootstrap as ttk
 from routine_generator import RoutineGenerator
 import json
 import os
+import subprocess
 
 class RoutineGeneratorApp:
     def __init__(self, root):
@@ -167,13 +168,26 @@ class RoutineGeneratorApp:
         self.start_time.insert(0, "08:30")
         self.start_time.pack(side='left', padx=5)
         
-        # Output file name
+        # Output file settings
         file_frame = ttk.Frame(settings_frame)
         file_frame.pack(fill='x', padx=5, pady=5)
-        ttk.Label(file_frame, text="Output File Name:").pack(side='left', padx=5)
+        
+        ttk.Label(file_frame, text="Output File:").pack(side='left', padx=5)
         self.output_filename = ttk.Entry(file_frame)
         self.output_filename.insert(0, "class_routines.xlsx")
         self.output_filename.pack(side='left', padx=5, fill='x', expand=True)
+        
+        # Browse button
+        ttk.Button(file_frame, text="Browse", 
+                  command=self.browse_save_location,
+                  style='secondary.TButton').pack(side='right', padx=5)
+        
+        # Auto-open checkbox
+        self.auto_open_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(settings_frame, 
+                       text="Automatically open file after generation",
+                       variable=self.auto_open_var,
+                       style='primary.TCheckbutton').pack(anchor='w', padx=5, pady=5)
         
         # Preview Frame
         preview_frame = ttk.LabelFrame(generate_frame, text="Schedule Preview", padding=10)
@@ -361,6 +375,26 @@ class RoutineGeneratorApp:
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
+    def browse_save_location(self):
+        initial_file = self.output_filename.get()
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".xlsx",
+            initialfile=initial_file,
+            filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")]
+        )
+        if file_path:
+            self.output_filename.delete(0, tk.END)
+            self.output_filename.insert(0, file_path)
+
+    def open_file(self, filepath):
+        if os.path.exists(filepath):
+            try:
+                os.startfile(filepath)
+            except AttributeError:  # For non-Windows systems
+                subprocess.call(['xdg-open', filepath])
+            except Exception as e:
+                messagebox.showerror("Error", f"Could not open file: {str(e)}")
+
     def generate_routine(self):
         if not self.teachers_data or not self.classes_data:
             messagebox.showerror("Error", "Please add teachers and classes first!")
@@ -397,11 +431,17 @@ class RoutineGeneratorApp:
             output_file = self.output_filename.get()
             generator.save_to_excel(routines, output_file)
             
+            success_message = f"Routine has been generated and saved as {output_file}"
             self.status_label.config(
                 text=f"Routine generated successfully!\nSaved as: {output_file}",
                 foreground="green"
             )
-            messagebox.showinfo("Success", f"Routine has been generated and saved as {output_file}")
+            
+            if self.auto_open_var.get():
+                self.open_file(output_file)
+                success_message += "\nFile has been opened automatically."
+            
+            messagebox.showinfo("Success", success_message)
             
         except Exception as e:
             self.status_label.config(

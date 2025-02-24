@@ -101,6 +101,10 @@ class RoutineGeneratorApp:
             self.root.iconbitmap(icon_path)
         self.root.geometry("800x600")
         
+        # Configure grid weights for main window
+        self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+        
         # Configure colors for dark theme
         self.style = ttk.Style()
         self.style.configure("Treeview", background="#2c2c2c", foreground="white", fieldbackground="#2c2c2c")
@@ -122,7 +126,7 @@ class RoutineGeneratorApp:
         
         # Create main notebook
         self.notebook = ttk.Notebook(root)
-        self.notebook.pack(fill='both', expand=True, padx=10, pady=5)
+        self.notebook.grid(row=0, column=0, padx=10, pady=5, sticky='nsew')
         
         # Create tabs
         self.create_subjects_tab()
@@ -140,38 +144,56 @@ class RoutineGeneratorApp:
         subjects_frame = ttk.Frame(self.notebook)
         self.notebook.add(subjects_frame, text="Subjects")
         
+        # Configure grid weights
+        subjects_frame.grid_columnconfigure(0, weight=1)
+        subjects_frame.grid_rowconfigure(1, weight=1)
+        
         # Subject input section
         input_frame = ttk.LabelFrame(subjects_frame, text="Add Subject", padding=10)
-        input_frame.pack(fill='x', padx=5, pady=5)
+        input_frame.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
+        input_frame.grid_columnconfigure(2, weight=1)
         
         ttk.Label(input_frame, text="Subject Name:").grid(row=0, column=0, padx=5, pady=5)
-        self.subject_name = ttk.Entry(input_frame,width=80)
-        self.subject_name.grid(row=0, column=2, padx=10, pady=5)
+        self.subject_name = ttk.Entry(input_frame, width=80)
+        self.subject_name.grid(row=0, column=2, padx=10, pady=5, sticky='ew')
         
         ttk.Button(input_frame, text="Add Subject", style='primary.TButton', 
                   command=self.add_subject).grid(row=0, column=3, columnspan=2, pady=10)
         
         # Subjects list
         list_frame = ttk.LabelFrame(subjects_frame, text="Subjects List", padding=10)
-        list_frame.pack(fill='both', expand=True, padx=5, pady=5)
+        list_frame.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
+        list_frame.grid_columnconfigure(0, weight=1)
+        list_frame.grid_rowconfigure(0, weight=1)
         
         self.subjects_tree = ttk.Treeview(list_frame, columns=(), show="tree")
-        self.subjects_tree.pack(fill='both', expand=True)
+        self.subjects_tree.grid(row=0, column=0, sticky='nsew')
+        
+        # Add scrollbar to tree
+        tree_scrollbar = ttk.Scrollbar(list_frame, orient="vertical", command=self.subjects_tree.yview)
+        tree_scrollbar.grid(row=0, column=1, sticky='ns')
+        self.subjects_tree.configure(yscrollcommand=tree_scrollbar.set)
         
         ttk.Button(list_frame, text="Remove Selected", style='danger.TButton',
-                  command=self.remove_subject).pack(pady=5,side='right')
+                  command=self.remove_subject).grid(row=1, column=0, columnspan=2, pady=5, sticky='e')
 
     def create_teachers_tab(self):
         teachers_frame = ttk.Frame(self.notebook)
         self.notebook.add(teachers_frame, text="Teachers")
         
+        # Configure grid weights
+        teachers_frame.grid_columnconfigure(0, weight=1)
+        teachers_frame.grid_rowconfigure(1, weight=1)
+        
         # Teacher input section
         input_frame = ttk.LabelFrame(teachers_frame, text="Add Teacher", padding=10)
-        input_frame.pack(fill='x', padx=5, pady=5)
+        input_frame.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
+        input_frame.grid_columnconfigure(1, weight=1)
+        input_frame.grid_columnconfigure(3, weight=1)
         
         ttk.Label(input_frame, text="Teacher Name:").grid(row=0, column=0, padx=5, pady=5)
-        self.teacher_name = ttk.Entry(input_frame,width=40)
-        self.teacher_name.grid(row=0, column=1, padx=5, pady=5)
+        self.teacher_name = ttk.Entry(input_frame, width=40)
+        self.teacher_name.grid(row=0, column=1, padx=5, pady=5, sticky='ew')
         
         # Subjects selection
         ttk.Label(input_frame, text="Select Subjects:").grid(row=0, column=2, padx=5, pady=5)
@@ -179,6 +201,7 @@ class RoutineGeneratorApp:
         # Create a frame to hold listbox and scrollbar
         subjects_frame = ttk.Frame(input_frame)
         subjects_frame.grid(row=0, column=3, padx=5, pady=5, sticky='ew')
+        subjects_frame.grid_columnconfigure(0, weight=1)
         
         # Create listbox and scrollbar
         self.subjects_listbox = tk.Listbox(subjects_frame, selectmode=tk.MULTIPLE, height=4, width=40, **self.listbox_config)
@@ -190,29 +213,42 @@ class RoutineGeneratorApp:
         scrollbar.pack(side='right', fill='y')
         
         ttk.Button(input_frame, text="Add Teacher", style='primary.TButton',
-                  command=self.add_teacher).grid(row=1, column=3, columnspan=1, pady=10, sticky='e')
+                  command=self.add_teacher).grid(row=1, column=3, pady=10, sticky='e')
         
         # Teachers list
         list_frame = ttk.LabelFrame(teachers_frame, text="Teachers List", padding=10)
-        list_frame.pack(fill='both', expand=True, padx=5, pady=5)
+        list_frame.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
+        list_frame.grid_columnconfigure(0, weight=1)
+        list_frame.grid_rowconfigure(0, weight=1)
         
         self.teachers_tree = ttk.Treeview(list_frame, show="tree")
-        self.teachers_tree.pack(fill='both', expand=True)
+        self.teachers_tree.grid(row=0, column=0, sticky='nsew')
+        
+        # Add scrollbar to tree
+        tree_scrollbar = ttk.Scrollbar(list_frame, orient="vertical", command=self.teachers_tree.yview)
+        tree_scrollbar.grid(row=0, column=1, sticky='ns')
+        self.teachers_tree.configure(yscrollcommand=tree_scrollbar.set)
         
         ttk.Button(list_frame, text="Remove Selected", style='danger.TButton',
-                  command=self.remove_teacher).pack(pady=5,side='right')
+                  command=self.remove_teacher).grid(row=1, column=0, columnspan=2, pady=5, sticky='e')
 
     def create_classes_tab(self):
         classes_frame = ttk.Frame(self.notebook)
         self.notebook.add(classes_frame, text="Classes")
         
+        # Configure grid weights
+        classes_frame.grid_columnconfigure(0, weight=1)
+        classes_frame.grid_rowconfigure(1, weight=1)
+        
         # Class input section
         input_frame = ttk.LabelFrame(classes_frame, text="Add Class", padding=10)
-        input_frame.pack(fill='x', padx=5, pady=5)
+        input_frame.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
+        input_frame.grid_columnconfigure(1, weight=1)
+        input_frame.grid_columnconfigure(3, weight=1)
         
         ttk.Label(input_frame, text="Class Name:").grid(row=0, column=0, padx=5, pady=5)
-        self.class_name = ttk.Entry(input_frame,width=40)
-        self.class_name.grid(row=0, column=1, padx=5, pady=5)
+        self.class_name = ttk.Entry(input_frame, width=40)
+        self.class_name.grid(row=0, column=1, padx=5, pady=5, sticky='ew')
         
         # Subjects selection for class
         ttk.Label(input_frame, text="Select Subjects:").grid(row=0, column=2, padx=5, pady=5)
@@ -220,6 +256,7 @@ class RoutineGeneratorApp:
         # Create a frame to hold listbox and scrollbar
         class_subjects_frame = ttk.Frame(input_frame)
         class_subjects_frame.grid(row=0, column=3, padx=5, pady=5, sticky='ew')
+        class_subjects_frame.grid_columnconfigure(0, weight=1)
         
         # Create listbox and scrollbar
         self.class_subjects_listbox = tk.Listbox(class_subjects_frame, selectmode=tk.MULTIPLE, height=4, width=40, **self.listbox_config)
@@ -231,17 +268,24 @@ class RoutineGeneratorApp:
         class_scrollbar.pack(side='right', fill='y')
         
         ttk.Button(input_frame, text="Add Class", style='primary.TButton',
-                  command=self.add_class).grid(row=1, column=3, columnspan=2, pady=10,sticky='e')
+                  command=self.add_class).grid(row=1, column=3, pady=10, sticky='e')
         
         # Classes list
         list_frame = ttk.LabelFrame(classes_frame, text="Classes List", padding=10)
-        list_frame.pack(fill='both', expand=True, padx=5, pady=5)
+        list_frame.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
+        list_frame.grid_columnconfigure(0, weight=1)
+        list_frame.grid_rowconfigure(0, weight=1)
         
         self.classes_tree = ttk.Treeview(list_frame, show="tree")
-        self.classes_tree.pack(fill='both', expand=True)
+        self.classes_tree.grid(row=0, column=0, sticky='nsew')
+        
+        # Add scrollbar to tree
+        tree_scrollbar = ttk.Scrollbar(list_frame, orient="vertical", command=self.classes_tree.yview)
+        tree_scrollbar.grid(row=0, column=1, sticky='ns')
+        self.classes_tree.configure(yscrollcommand=tree_scrollbar.set)
         
         ttk.Button(list_frame, text="Remove Selected", style='danger.TButton',
-                  command=self.remove_class).pack(pady=5,side='right')
+                  command=self.remove_class).grid(row=1, column=0, columnspan=2, pady=5, sticky='e')
 
     def create_generate_tab(self):
         generate_frame = ttk.Frame(self.notebook)

@@ -1,0 +1,1 @@
+{"subjects": ["bangla", "english", "math", "computer", "science", "islam"], "teachers": {"sabir sir": ["computer"], "nusrat": ["islam"], "selena": ["math", "science"], "mahin": ["english"], "samin": ["bangla", "english"], "anika": ["bangla"]}, "classes": {"1": ["bangla", "computer", "islam", "math"], "5": ["bangla", "computer", "english", "islam", "math", "science"]}}

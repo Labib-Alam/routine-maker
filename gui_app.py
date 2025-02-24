@@ -145,10 +145,10 @@ class RoutineGeneratorApp:
         
         ttk.Label(input_frame, text="Subject Name:").grid(row=0, column=0, padx=5, pady=5)
         self.subject_name = ttk.Entry(input_frame)
-        self.subject_name.grid(row=0, column=1, padx=5, pady=5)
+        self.subject_name.grid(row=0, column=2, padx=10, pady=5)
         
         ttk.Button(input_frame, text="Add Subject", style='primary.TButton', 
-                  command=self.add_subject).grid(row=1, column=0, columnspan=2, pady=10)
+                  command=self.add_subject).grid(row=0, column=3, columnspan=2, pady=10)
         
         # Subjects list
         list_frame = ttk.LabelFrame(subjects_frame, text="Subjects List", padding=10)
@@ -169,16 +169,17 @@ class RoutineGeneratorApp:
         input_frame.pack(fill='x', padx=5, pady=5)
         
         ttk.Label(input_frame, text="Teacher Name:").grid(row=0, column=0, padx=5, pady=5)
-        self.teacher_name = ttk.Entry(input_frame)
+        self.teacher_name = ttk.Entry(input_frame,width=40)
         self.teacher_name.grid(row=0, column=1, padx=5, pady=5)
         
         # Subjects selection
-        ttk.Label(input_frame, text="Select Subjects:").grid(row=1, column=0, padx=5, pady=5)
-        self.subjects_listbox = tk.Listbox(input_frame, selectmode=tk.MULTIPLE, height=5, **self.listbox_config)
-        self.subjects_listbox.grid(row=1, column=1, padx=5, pady=5, sticky='ew')
+        ttk.Label(input_frame, text="Select Subjects:").grid(row=0, column=2, padx=5, pady=5)
+        self.subjects_listbox = tk.Listbox(input_frame, selectmode=tk.MULTIPLE, height=4,width=40, **self.listbox_config)
+        self.subjects_listbox.grid(row=0, column=3, padx=5, pady=5, sticky='ew')
+        #self.subjects_listbox.pack(fill='both', expand=True, padx=5, pady=5)
         
         ttk.Button(input_frame, text="Add Teacher", style='primary.TButton',
-                  command=self.add_teacher).grid(row=2, column=0, columnspan=2, pady=10)
+                  command=self.add_teacher).grid(row=1, column=3, columnspan=1, pady=10, sticky='e')
         
         # Teachers list
         list_frame = ttk.LabelFrame(teachers_frame, text="Teachers List", padding=10)
@@ -199,16 +200,16 @@ class RoutineGeneratorApp:
         input_frame.pack(fill='x', padx=5, pady=5)
         
         ttk.Label(input_frame, text="Class Name:").grid(row=0, column=0, padx=5, pady=5)
-        self.class_name = ttk.Entry(input_frame)
+        self.class_name = ttk.Entry(input_frame,width=40)
         self.class_name.grid(row=0, column=1, padx=5, pady=5)
         
         # Subjects selection for class
-        ttk.Label(input_frame, text="Select Subjects:").grid(row=1, column=0, padx=5, pady=5)
-        self.class_subjects_listbox = tk.Listbox(input_frame, selectmode=tk.MULTIPLE, height=5, **self.listbox_config)
-        self.class_subjects_listbox.grid(row=1, column=1, padx=5, pady=5, sticky='ew')
+        ttk.Label(input_frame, text="Select Subjects:").grid(row=0, column=2, padx=5, pady=5)
+        self.class_subjects_listbox = tk.Listbox(input_frame, selectmode=tk.MULTIPLE, height=5,width=40, **self.listbox_config)
+        self.class_subjects_listbox.grid(row=0, column=3, padx=5, pady=5, sticky='ew')
         
         ttk.Button(input_frame, text="Add Class", style='primary.TButton',
-                  command=self.add_class).grid(row=2, column=0, columnspan=2, pady=10)
+                  command=self.add_class).grid(row=1, column=3, columnspan=2, pady=10,sticky='e')
         
         # Classes list
         list_frame = ttk.LabelFrame(classes_frame, text="Classes List", padding=10)
@@ -230,40 +231,44 @@ class RoutineGeneratorApp:
         
         # Working Days Selection
         days_frame = ttk.Frame(settings_frame)
-        days_frame.pack(fill='x', padx=5, pady=5)
-        ttk.Label(days_frame, text="Working Days:").pack(anchor='w')
+        days_frame.pack(fill='x', padx=5, pady=15)
+        ttk.Label(days_frame, text="Working Days:", font=('Helvetica', 10, 'bold')).pack(anchor='w')
         
         self.days_vars = {}
         all_days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         days_checkframe = ttk.Frame(days_frame)
-        days_checkframe.pack(fill='x', padx=20)
+        days_checkframe.pack(fill='x', padx=20, pady=10)
         
         for i, day in enumerate(all_days):
             var = tk.BooleanVar(value=True if day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] else False)
             self.days_vars[day] = var
-            ttk.Checkbutton(days_checkframe, text=day, variable=var).grid(row=i//3, column=i%3, padx=5, pady=2, sticky='w')
+            ttk.Checkbutton(days_checkframe, text=day, variable=var).grid(row=0, column=i, padx=5, pady=5, sticky='w')
+        
+        ttk.Separator(settings_frame, orient='horizontal').pack(fill='x', padx=5, pady=6)
+        
+        # Periods and Time settings in same row
+        settings_row_frame = ttk.Frame(settings_frame)
+        settings_row_frame.pack(fill='x', padx=5, pady=15)
         
         # Periods per day
-        periods_frame = ttk.Frame(settings_frame)
-        periods_frame.pack(fill='x', padx=5, pady=5)
-        ttk.Label(periods_frame, text="Periods per day:").pack(side='left', padx=5)
-        self.periods_spinbox = ttk.Spinbox(periods_frame, from_=1, to=12, width=5)
+        ttk.Label(settings_row_frame, text="Periods per day:", font=('Helvetica', 10, 'bold')).grid(row=0, column=0, padx=5, pady=10)
+        self.periods_spinbox = ttk.Spinbox(settings_row_frame, from_=1, to=12, width=20)
         self.periods_spinbox.set(6)  # Default value
-        self.periods_spinbox.pack(side='left', padx=5)
+        self.periods_spinbox.grid(row=0, column=1, padx=5, pady=10)
         
         # Time settings
-        time_frame = ttk.Frame(settings_frame)
-        time_frame.pack(fill='x', padx=5, pady=5)
-        ttk.Label(time_frame, text="Start Time (HH:MM):").pack(side='left', padx=5)
-        self.start_time = ttk.Entry(time_frame, width=10)
+        ttk.Label(settings_row_frame, text="Start Time (HH:MM):", font=('Helvetica', 10, 'bold')).grid(row=0, column=2, padx=(20,5), pady=10)
+        self.start_time = ttk.Entry(settings_row_frame, width=20)
         self.start_time.insert(0, "08:30")
-        self.start_time.pack(side='left', padx=5)
+        self.start_time.grid(row=0, column=3, padx=5, pady=10)
+        
+        ttk.Separator(settings_frame, orient='horizontal').pack(fill='x', padx=5, pady=6)
         
         # Output file settings
         file_frame = ttk.Frame(settings_frame)
-        file_frame.pack(fill='x', padx=5, pady=5)
+        file_frame.pack(fill='x', padx=5, pady=15)
         
-        ttk.Label(file_frame, text="Output File:").pack(side='left', padx=5)
+        ttk.Label(file_frame, text="Output File:", font=('Helvetica', 10, 'bold')).pack(side='left', padx=5)
         self.output_filename = ttk.Entry(file_frame)
         self.output_filename.insert(0, "class_routines.xlsx")
         self.output_filename.pack(side='left', padx=5, fill='x', expand=True)

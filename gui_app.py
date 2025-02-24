@@ -6,6 +6,17 @@ import json
 import os
 import subprocess
 import time
+import sys
+
+def get_resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    
+    return os.path.join(base_path, relative_path)
 
 class SplashScreen(tk.Toplevel):
     def __init__(self, parent):
@@ -13,6 +24,11 @@ class SplashScreen(tk.Toplevel):
         
         # Remove window decorations
         self.overrideredirect(True)
+        
+        # Set icon for splash screen
+        icon_path = get_resource_path('logo.ico')
+        if os.path.exists(icon_path):
+            self.iconbitmap(icon_path)
         
         # Get screen dimensions
         screen_width = self.winfo_screenwidth()
@@ -69,11 +85,19 @@ class RoutineGeneratorApp:
         splash = SplashScreen(root)
         root.withdraw()  # Hide main window
         
+        # Set icon for main window
+        icon_path = get_resource_path('logo.ico')
+        if os.path.exists(icon_path):
+            root.iconbitmap(icon_path)
+        
         # Wait for splash screen
         root.after(1000, lambda: self.show_main_window(root))
         
         self.root = root
         self.root.title("Class Routine Generator")
+        icon_path = get_resource_path('logo.ico')
+        if os.path.exists(icon_path):
+            self.root.iconbitmap(icon_path)
         self.root.geometry("800x600")
         
         # Configure colors for dark theme

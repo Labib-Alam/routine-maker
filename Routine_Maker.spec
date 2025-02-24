@@ -5,7 +5,7 @@ a = Analysis(
     ['gui_app.py'],
     pathex=[],
     binaries=[],
-    datas=[('routine_data.json', '.')],
+    datas=[('routine_data.json', '.'), ('d:\\routine maker\\logo.ico', '.')],
     hiddenimports=['ttkbootstrap', 'pandas', 'openpyxl'],
     hookspath=[],
     hooksconfig={},
@@ -34,4 +34,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['d:\\routine maker\\logo.ico'],
 )

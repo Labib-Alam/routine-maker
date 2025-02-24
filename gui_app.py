@@ -1,3 +1,4 @@
+from textwrap import fill
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import ttkbootstrap as ttk
@@ -144,7 +145,7 @@ class RoutineGeneratorApp:
         input_frame.pack(fill='x', padx=5, pady=5)
         
         ttk.Label(input_frame, text="Subject Name:").grid(row=0, column=0, padx=5, pady=5)
-        self.subject_name = ttk.Entry(input_frame)
+        self.subject_name = ttk.Entry(input_frame,width=80)
         self.subject_name.grid(row=0, column=2, padx=10, pady=5)
         
         ttk.Button(input_frame, text="Add Subject", style='primary.TButton', 
@@ -158,7 +159,7 @@ class RoutineGeneratorApp:
         self.subjects_tree.pack(fill='both', expand=True)
         
         ttk.Button(list_frame, text="Remove Selected", style='danger.TButton',
-                  command=self.remove_subject).pack(pady=5)
+                  command=self.remove_subject).pack(pady=5,side='right')
 
     def create_teachers_tab(self):
         teachers_frame = ttk.Frame(self.notebook)
@@ -174,9 +175,19 @@ class RoutineGeneratorApp:
         
         # Subjects selection
         ttk.Label(input_frame, text="Select Subjects:").grid(row=0, column=2, padx=5, pady=5)
-        self.subjects_listbox = tk.Listbox(input_frame, selectmode=tk.MULTIPLE, height=4,width=40, **self.listbox_config)
-        self.subjects_listbox.grid(row=0, column=3, padx=5, pady=5, sticky='ew')
-        #self.subjects_listbox.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        # Create a frame to hold listbox and scrollbar
+        subjects_frame = ttk.Frame(input_frame)
+        subjects_frame.grid(row=0, column=3, padx=5, pady=5, sticky='ew')
+        
+        # Create listbox and scrollbar
+        self.subjects_listbox = tk.Listbox(subjects_frame, selectmode=tk.MULTIPLE, height=4, width=40, **self.listbox_config)
+        scrollbar = ttk.Scrollbar(subjects_frame, orient="vertical", command=self.subjects_listbox.yview)
+        self.subjects_listbox.configure(yscrollcommand=scrollbar.set)
+        
+        # Pack listbox and scrollbar
+        self.subjects_listbox.pack(side='left', fill='both', expand=True)
+        scrollbar.pack(side='right', fill='y')
         
         ttk.Button(input_frame, text="Add Teacher", style='primary.TButton',
                   command=self.add_teacher).grid(row=1, column=3, columnspan=1, pady=10, sticky='e')
@@ -189,7 +200,7 @@ class RoutineGeneratorApp:
         self.teachers_tree.pack(fill='both', expand=True)
         
         ttk.Button(list_frame, text="Remove Selected", style='danger.TButton',
-                  command=self.remove_teacher).pack(pady=5)
+                  command=self.remove_teacher).pack(pady=5,side='right')
 
     def create_classes_tab(self):
         classes_frame = ttk.Frame(self.notebook)
@@ -205,8 +216,19 @@ class RoutineGeneratorApp:
         
         # Subjects selection for class
         ttk.Label(input_frame, text="Select Subjects:").grid(row=0, column=2, padx=5, pady=5)
-        self.class_subjects_listbox = tk.Listbox(input_frame, selectmode=tk.MULTIPLE, height=5,width=40, **self.listbox_config)
-        self.class_subjects_listbox.grid(row=0, column=3, padx=5, pady=5, sticky='ew')
+        
+        # Create a frame to hold listbox and scrollbar
+        class_subjects_frame = ttk.Frame(input_frame)
+        class_subjects_frame.grid(row=0, column=3, padx=5, pady=5, sticky='ew')
+        
+        # Create listbox and scrollbar
+        self.class_subjects_listbox = tk.Listbox(class_subjects_frame, selectmode=tk.MULTIPLE, height=4, width=40, **self.listbox_config)
+        class_scrollbar = ttk.Scrollbar(class_subjects_frame, orient="vertical", command=self.class_subjects_listbox.yview)
+        self.class_subjects_listbox.configure(yscrollcommand=class_scrollbar.set)
+        
+        # Pack listbox and scrollbar
+        self.class_subjects_listbox.pack(side='left', fill='both', expand=True)
+        class_scrollbar.pack(side='right', fill='y')
         
         ttk.Button(input_frame, text="Add Class", style='primary.TButton',
                   command=self.add_class).grid(row=1, column=3, columnspan=2, pady=10,sticky='e')
@@ -219,7 +241,7 @@ class RoutineGeneratorApp:
         self.classes_tree.pack(fill='both', expand=True)
         
         ttk.Button(list_frame, text="Remove Selected", style='danger.TButton',
-                  command=self.remove_class).pack(pady=5)
+                  command=self.remove_class).pack(pady=5,side='right')
 
     def create_generate_tab(self):
         generate_frame = ttk.Frame(self.notebook)

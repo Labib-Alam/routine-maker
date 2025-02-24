@@ -5,9 +5,73 @@ from routine_generator import RoutineGenerator
 import json
 import os
 import subprocess
+import time
+
+class SplashScreen(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        
+        # Remove window decorations
+        self.overrideredirect(True)
+        
+        # Get screen dimensions
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        
+        # Set window dimensions and position
+        width = 400
+        height = 200
+        x = (screen_width - width) // 2
+        y = (screen_height - height) // 2
+        self.geometry(f'{width}x{height}+{x}+{y}')
+        
+        # Configure style
+        style = ttk.Style()
+        style.configure("Splash.TLabel", font=("Helvetica", 16, "bold"), foreground="#1F4E78")
+        style.configure("Sub.TLabel", font=("Helvetica", 10), foreground="#666666")
+        
+        # Create frame with padding
+        frame = ttk.Frame(self, padding=20)
+        frame.pack(fill='both', expand=True)
+        
+        # Add title
+        title = ttk.Label(frame, text="Class Routine Maker", style="Splash.TLabel")
+        title.pack(pady=(20,5))
+        
+        # Add sub heading
+        sub_heading = ttk.Label(frame, text="by Labib Technology", style="Sub.TLabel")
+        sub_heading.pack(pady=(0,20))
+        
+        # Add progress bar
+        self.progress = ttk.Progressbar(frame, length=300, mode='determinate', 
+                                      style='info.Horizontal.TProgressbar')
+        self.progress.pack(pady=10)
+        
+        # Make window floating
+        self.lift()
+        self.attributes('-topmost', True)
+        
+        # Start progress
+        self.progress_value = 0
+        self.update_progress()
+        
+    def update_progress(self):
+        if self.progress_value < 100:
+            self.progress_value += 4
+            self.progress['value'] = self.progress_value
+            self.after(50, self.update_progress)  # Update every 50ms
+        else:
+            self.after(200, self.destroy)  # Close after 0.2 seconds when full
 
 class RoutineGeneratorApp:
     def __init__(self, root):
+        # Show splash screen first
+        splash = SplashScreen(root)
+        root.withdraw()  # Hide main window
+        
+        # Wait for splash screen
+        root.after(1000, lambda: self.show_main_window(root))
+        
         self.root = root
         self.root.title("Class Routine Generator")
         self.root.geometry("800x600")
@@ -43,6 +107,9 @@ class RoutineGeneratorApp:
         
         # Load saved data if exists
         self.load_data()
+
+    def show_main_window(self, root):
+        root.deiconify()  # Show main window
 
     def create_subjects_tab(self):
         subjects_frame = ttk.Frame(self.notebook)

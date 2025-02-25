@@ -31,16 +31,9 @@ class SplashScreen(tk.Toplevel):
         if os.path.exists(icon_path):
             self.iconbitmap(icon_path)
         
-        # Get screen dimensions
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        
-        # Set window dimensions and position
-        width = 400
-        height = 200
-        x = (screen_width - width) // 2
-        y = (screen_height - height) // 2
-        self.geometry(f'{width}x{height}+{x}+{y}')
+        # Set window dimensions
+        self.width = 400
+        self.height = 200
         
         # Configure style
         style = ttk.Style()
@@ -68,9 +61,21 @@ class SplashScreen(tk.Toplevel):
         self.lift()
         self.attributes('-topmost', True)
         
+        # Center the window after all widgets are added
+        self.update_idletasks()  # Ensure window size is updated
+        self.center_window()
+        
         # Start progress
         self.progress_value = 0
         self.update_progress()
+    
+    def center_window(self):
+        """Center the window on the screen"""
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        x = (screen_width - self.width) // 2
+        y = (screen_height - self.height) // 2
+        self.geometry(f'{self.width}x{self.height}+{x}+{y}')
         
     def update_progress(self):
         if self.progress_value < 100:
@@ -91,19 +96,12 @@ class RoutineGeneratorApp:
         if os.path.exists(icon_path):
             root.iconbitmap(icon_path)
         
-        # Wait for splash screen
-        root.after(1000, lambda: self.show_main_window(root))
+        # Set window dimensions
+        self.width = 800
+        self.height = 600
         
         self.root = root
         self.root.title("Class Routine Generator")
-        icon_path = get_resource_path('logo.ico')
-        if os.path.exists(icon_path):
-            self.root.iconbitmap(icon_path)
-        self.root.geometry("800x600")
-        
-        # Configure grid weights for main window
-        self.root.grid_rowconfigure(0, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
         
         # Configure colors for dark theme
         self.style = ttk.Style()
@@ -118,6 +116,10 @@ class RoutineGeneratorApp:
             'selectbackground': '#0d6efd',
             'selectforeground': 'white'
         }
+        
+        # Configure grid weights for main window
+        root.grid_rowconfigure(0, weight=1)
+        root.grid_columnconfigure(0, weight=1)
         
         # Data storage
         self.subjects_list = []
@@ -136,9 +138,24 @@ class RoutineGeneratorApp:
         
         # Load saved data if exists
         self.load_data()
+        
+        # Center the window after all widgets are added
+        root.update_idletasks()
+        self.center_window()
+        
+        # Wait for splash screen
+        root.after(1000, lambda: self.show_main_window(root))
 
     def show_main_window(self, root):
         root.deiconify()  # Show main window
+
+    def center_window(self):
+        """Center the window on the screen"""
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        x = (screen_width - self.width) // 2
+        y = (screen_height - self.height) // 2
+        self.root.geometry(f'{self.width}x{self.height}+{x}+{y}')
 
     def create_subjects_tab(self):
         subjects_frame = ttk.Frame(self.notebook)
